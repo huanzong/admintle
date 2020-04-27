@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * 用户登录退出修改密码等接口
+ */
 @Controller
 @RequestMapping("/user")
 public class UserController {

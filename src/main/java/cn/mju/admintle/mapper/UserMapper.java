@@ -31,7 +31,7 @@ public interface UserMapper {
     User getUserByDeptId(int deptId);
 
     @Select("select * from tb_user where username = #{username} and dept_id = #{deptId} and job_id = #{jobId}")
-    User getUserByNameDeptJob(String username,int deptId,int jobId);
+    User getUserByNameDeptJob(@Param("username") String username,@Param("deptId") int deptId,@Param("jobId") int jobId);
 
     @Select("select * from tb_user where id = #{id}")
     @Results(

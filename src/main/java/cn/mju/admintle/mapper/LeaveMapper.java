@@ -26,7 +26,7 @@ public interface LeaveMapper {
     List<Leave> getOneList(long userId);
 
     @Select("select * from tb_leave where user_id =#{userId} and begin_Time = #{beginTime}")
-    Leave getLeave(long userId, Date beginTime);
+    Leave getLeave(@Param("userId") long userId,@Param("beginTime") Date beginTime);
 
     @Select("select * from tb_leave where state =#{state} ")
     List<Leave> getLeaveByState(int state);

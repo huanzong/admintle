@@ -2,6 +2,7 @@ package cn.mju.admintle.provider;
 
 import cn.mju.admintle.domain.User;
 import org.apache.ibatis.jdbc.SQL;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map;
 public class UserProvider {
     /**
      * 动态插入
+     *
      * @param user
      * @return
      */
@@ -49,6 +51,7 @@ public class UserProvider {
 
     /**
      * 动态更新
+     *
      * @param user
      * @return
      */
@@ -67,19 +70,19 @@ public class UserProvider {
             if (user.getPhone() != null) {
                 SET("phone = #{phone}");
             }
-            if (user.getBirthday()!= null) {
+            if (user.getBirthday() != null) {
                 SET("birthday = #{birthday}");
             }
-            if (user.getAddress()!= null) {
+            if (user.getAddress() != null) {
                 SET("address = #{address}");
             }
-            if (user.getDeptId()!= null) {
+            if (user.getDeptId() != null) {
                 SET("dept_id = #{deptId}");
             }
-            if (user.getJobId()!= null) {
+            if (user.getJobId() != null) {
                 SET("job_id = #{jobId}");
             }
-            if (user.getState()!= null) {
+            if (user.getState() != null) {
                 SET("state = #{state}");
             }
 
@@ -91,31 +94,31 @@ public class UserProvider {
     /**
      * 动态查询
      */
-    public String selectUser(Map<String,Object> params) {
+    public String selectUser(Map<String, Object> params) {
 
         List<Integer> deptIds = (List<Integer>) params.get("deptId");
         List<Integer> jobIds = (List<Integer>) params.get("jobId");
 
-        StringBuffer sql=new StringBuffer("select * from tb_user where 1 = 1"+" ");
-        if (params.get("username") != null && !params.get("username").equals("")){
+        StringBuffer sql = new StringBuffer("select * from tb_user where 1 = 1" + " ");
+        if (params.get("username") != null && !params.get("username").equals("")) {
             sql.append("and username LIKE CONCAT ('%',#{username},'%') ");
         }
-        if (params.get("deptId") != null ){
+        if (params.get("deptId") != null) {
             sql.append("and dept_id in (");
-
-            for (int i = 0; i < deptIds.size(); i++) {
-
-                sql.append("'").append(deptIds.get(i)).append("'");
-
-                if (i < deptIds.size() - 1)
-
-                    sql.append(",");
-
+            if (CollectionUtils.isEmpty(deptIds)) {
+                deptIds.add(0);
             }
-
+            for (int i = 0; i < deptIds.size(); i++) {
+                sql.append("'").append(deptIds.get(i)).append("'");
+                if (i < deptIds.size() - 1)
+                    sql.append(",");
+            }
             sql.append(")");
         }
-        if (params.get("jobId") != null ){
+        if (params.get("jobId") != null) {
+            if (CollectionUtils.isEmpty(jobIds)) {
+                jobIds.add(0);
+            }
             sql.append("and job_id in (");
 
             for (int i = 0; i < jobIds.size(); i++) {
@@ -135,6 +138,7 @@ public class UserProvider {
 
     /**
      * 批量删除
+     *
      * @param map
      * @return
      */

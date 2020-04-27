@@ -48,43 +48,43 @@ public class WagesController {
     private static final Logger log = LoggerFactory.getLogger(WagesController.class);
 
     @GetMapping("/list")
-    public String getAll(@RequestParam(defaultValue = "1", value = "pageNum",required = true) Integer pageNum, Model model,HttpServletRequest request){
+    public String getAll(@RequestParam(defaultValue = "1", value = "pageNum", required = true) Integer pageNum, Model model, HttpServletRequest request) {
         int pageSize = 10;
         PageInfo<Wages> pageInfo = wagesService.getAll(pageNum, pageSize);
         List<WagesDto> wagesDtos = pubService.changeWagesDto(pageInfo);
-        model.addAttribute("page",pageInfo);
-        model.addAttribute("wages",wagesDtos);
+        model.addAttribute("page", pageInfo);
+        model.addAttribute("wages", wagesDtos);
         User user = (User) request.getSession().getAttribute("user");
         List<WagesDto> self = wagesService.getSelf(user.getId());
-        model.addAttribute("self",self);
+        model.addAttribute("self", self);
         return "wages/wagesList";
     }
 
     @RequestMapping("/search")
-    public String search(@RequestParam(defaultValue = "1", value = "pageNum2",required = true) Integer pageNum2, Model model,
-                         @RequestParam(value = "username",required = false) String username){
+    public String search(@RequestParam(defaultValue = "1", value = "pageNum2", required = true) Integer pageNum2, Model model,
+                         @RequestParam(value = "username", required = false) String username) {
         int pageSize = 10;
-        PageInfo<Wages> pageInfo = wagesService.findWagesByUserName(username,pageNum2, pageSize);
+        PageInfo<Wages> pageInfo = wagesService.findWagesByUserName(username, pageNum2, pageSize);
         List<WagesDto> wagesDtos = pubService.changeWagesDto(pageInfo);
-        model.addAttribute("username",username);
-        model.addAttribute("page2",pageInfo);
-        model.addAttribute("wages",wagesDtos);
+        model.addAttribute("username", username);
+        model.addAttribute("page2", pageInfo);
+        model.addAttribute("wages", wagesDtos);
         return "wages/wagesList";
     }
 
     @RequestMapping("/toAdd")
-    public String toAdd(){
+    public String toAdd() {
         return "wages/addWages";
     }
 
     @RequestMapping("/add")
     @ResponseBody
-    public Map<String,Object> add(@Validated WagesDto wagesDto, Model model, BindingResult bindingResult){
+    public Map<String, Object> add(@Validated WagesDto wagesDto, Model model, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         boolean b = userService.judUserByName(wagesDto.getUsername());
-        if (b){
+        if (!b) {
             Map<String, Object> resultMap = new HashMap<String, Object>();
             resultMap.put("result", "false");
             return resultMap;
@@ -96,27 +96,23 @@ public class WagesController {
 
 
     @RequestMapping("/delete/{id}")
-    public String delete(@PathVariable("id") Long id){
+    public String delete(@PathVariable("id") Long id) {
         wagesMapper.deleteWages(id);
         return "redirect:/wages/list";
 
     }
 
     @RequestMapping("/deleteBatch")
-    public String deleteBatch(@RequestParam("check")Long[] ids){
+    public String deleteBatch(@RequestParam("check") Long[] ids) {
         wagesService.deleteBatch(ids);
         return "redirect:/wages/list";
     }
 
     /*下载excel*/
     @RequestMapping("/download")
-    public void download(HttpServletRequest request, HttpServletResponse response)throws IOException
-    {
-        String[] headers = {"编号", "姓名", "部门", "职位", "基本工资","交通房补","加班补贴","奖金","五险一金扣款","缺勤扣款","迟到扣款","实际工资","签发日期"};
-
+    public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String[] headers = {"编号", "姓名", "部门", "职位", "基本工资", "交通房补", "加班补贴", "奖金", "五险一金扣款", "缺勤扣款", "迟到扣款", "实际工资", "签发日期"};
         List<WagesDto> dataset = wagesService.downloadWages();
-
-
         // 声明一个工作薄
         HSSFWorkbook workbook = new HSSFWorkbook();
         // 生成一个表格
@@ -153,15 +149,12 @@ public class WagesController {
                     String textValue = null;
 
 
-                    if (value instanceof Date)
-                    {
+                    if (value instanceof Date) {
                         Date date = (Date) value;
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         textValue = sdf.format(date);
-                    }
-                    else
-                    {
-                        if (value !=null){//其它数据类型都当作字符串简单处理
+                    } else {
+                        if (value != null) {//其它数据类型都当作字符串简单处理
                             textValue = value.toString();
                         }
 
@@ -198,23 +191,23 @@ public class WagesController {
     }
 
     @RequestMapping("/userCheck")
-    public void regNameCheck(@RequestParam("username") String username,HttpServletResponse response) throws IOException {
+    public void regNameCheck(@RequestParam("username") String username, HttpServletResponse response) throws IOException {
 
-        Map<String,Object> map = new HashMap<String,Object>();
-            boolean flag = userService.judUserByName(username);
+        Map<String, Object> map = new HashMap<String, Object>();
+        boolean flag = userService.judUserByName(username);
 
-            if (flag) {
-                map.put("userExsit", true);
-                map.put("msg", "此用户存在");
+        if (flag) {
+            map.put("userExsit", true);
+            map.put("msg", "此用户存在");
 
-            } else {
-                map.put("userExsit", false);
-                map.put("msg", "此用户不存在！");
+        } else {
+            map.put("userExsit", false);
+            map.put("msg", "此用户不存在！");
 
-            }
+        }
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getWriter(),map);
+        mapper.writeValue(response.getWriter(), map);
 
     }
 

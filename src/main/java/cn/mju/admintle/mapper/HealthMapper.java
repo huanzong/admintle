@@ -26,7 +26,7 @@ public interface HealthMapper {
     List<Health> getListByDate(Date today);
 
     @Select("select * from tb_health where user_id =#{userId} and today = #{today}")
-    Health getOneToday(long userId,Date today);
+    Health getOneToday(@Param("userId") long userId,@Param("today") Date today);
 
     @InsertProvider(type = HealthProvider.class, method = "insertHealth")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")

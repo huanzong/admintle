@@ -24,13 +24,13 @@ public interface SignMapper {
     List<Sign> getOneList(long userId);
 
     @Select("SELECT * FROM tb_sign WHERE MONTH(time) = #{month} and user_id = #{userId} order by time desc")
-    List<Sign> getSignByUserIdMonth(long userId,int month);
+    List<Sign> getSignByUserIdMonth(@Param("userId") long userId,@Param("month") int month);
 
     @Select("SELECT * FROM tb_sign WHERE DATE(time) = #{time} and user_id = #{userId} order by time desc")
-    Sign getSignByUserIdDate(long userId,Date time);
+    Sign getSignByUserIdDate(@Param("userId") long userId,@Param("time") Date time);
 
     @Select("select * from tb_sign where user_id =#{userId} and time = #{time}")
-    Sign getSign(long userId, Date time);
+    Sign getSign(@Param("userId") long userId,@Param("time") Date time);
 
     @InsertProvider(type = SignProvider.class, method = "insertSign")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")

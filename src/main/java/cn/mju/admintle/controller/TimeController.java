@@ -28,6 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
+/**
+ * 考勤管理相关接口
+ */
 @Controller
 @RequestMapping("/time")
 public class TimeController {
@@ -140,7 +143,6 @@ public class TimeController {
 
         Sign sign = timeService.getSign(user.getId());
         if (sign == null) {
-
             resultMap.put("result", "false");
         } else {
             resultMap.put("result", "true");

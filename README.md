@@ -1,5 +1,5 @@
 # manage-system
-基于springboot+shiro+thymeleaf开发的一套简易人事管理系统
+基于springboot+shiro+thymeleaf开发的一套简易人力资源管理系统
 技术栈：springboot、springmvc、mybatis、shiro、thymeleaf
 数据库：mysql
 缓存：redis

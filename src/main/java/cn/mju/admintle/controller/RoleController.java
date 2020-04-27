@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.jws.WebParam;
 import java.util.List;
 
+/**
+ * 权限管理相关接口
+ */
 @Controller
 @RequestMapping("/role")
 public class RoleController {

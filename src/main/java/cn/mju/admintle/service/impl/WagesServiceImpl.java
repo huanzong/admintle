@@ -35,8 +35,8 @@ public class WagesServiceImpl implements WagesService {
     private JobMapper jobMapper;
 
     @Override
-    public PageInfo<Wages> getAll(int pageNum,int pageSize) {
-        PageHelper.startPage(pageNum,pageSize);
+    public PageInfo<Wages> getAll(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
         List<Wages> wageses = wagesMapper.getAll();
         PageInfo<Wages> wagesPageInfo = new PageInfo<>(wageses);
         return wagesPageInfo;
@@ -44,16 +44,16 @@ public class WagesServiceImpl implements WagesService {
 
 
     @Override
-    public PageInfo<Wages> findWagesByUserName(String userName,int pageNum,int pageSize) {
+    public PageInfo<Wages> findWagesByUserName(String userName, int pageNum, int pageSize) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("username",userName);
+        map.put("username", userName);
         List<User> users = userMapper.getUserByName(map);
         ArrayList<Long> list = new ArrayList<>();
         for (User user : users) {
             Long id = user.getId();
             list.add(id);
         }
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         List<Wages> wageses = wagesMapper.getWagesByIds(list);
         PageInfo<Wages> pageInfo = new PageInfo<>(wageses);
         return pageInfo;
@@ -66,7 +66,7 @@ public class WagesServiceImpl implements WagesService {
         wagesDto.setUsername(userMapper.getUserById(wages.getUserId()).getUsername());
         wagesDto.setDeptName(deptMapper.getDeptById(userMapper.getUserById(wages.getUserId()).getDeptId()).getDeptName());
         wagesDto.setJobName(jobMapper.getJobById(userMapper.getUserById(wages.getUserId()).getJobId()).getJobName());
-        BeanUtils.copyProperties(wages,wagesDto);
+        BeanUtils.copyProperties(wages, wagesDto);
         return wagesDto;
     }
 
@@ -75,8 +75,8 @@ public class WagesServiceImpl implements WagesService {
         Wages wages = new Wages();
         User user = userMapper.getUserByUsername(wagesDto.getUsername());
         wages.setUserId(user.getId());
-        BeanUtils.copyProperties(wagesDto,wages);
-        boolean flag= wagesMapper.addWages(wages) >0;
+        BeanUtils.copyProperties(wagesDto, wages);
+        boolean flag = wagesMapper.addWages(wages) > 0;
         return flag;
     }
 
@@ -84,22 +84,36 @@ public class WagesServiceImpl implements WagesService {
     @Override
     public boolean deleteBatch(Long[] ids) {
         ArrayList<Long> list = new ArrayList<>(Arrays.asList(ids));
-        boolean flag = wagesMapper.deleleteBatch(list) >0;
+        boolean flag = wagesMapper.deleleteBatch(list) > 0;
         return flag;
     }
 
     @Override
     public List<WagesDto> downloadWages() {
+        List<WagesDto> wagesDtos = new ArrayList<>();
         List<Wages> wageses = wagesMapper.getAll();
-        List<WagesDto> wagesDtos = wageses.stream().map(e ->(
-                new WagesDto(e.getId(),userMapper.getUserById(e.getUserId()).getUsername(),
-                        deptMapper.getDeptById(userMapper.getUserById(e.getUserId()).getDeptId()).getDeptName(),
-                        jobMapper.getJobById(userMapper.getUserById(e.getUserId()).getJobId()).getJobName(),e.getBasicWages(),
-                        e.getLivePay(),e.getNightPay(),e.getRewardPay(),e.getSocialPay(),e.getAbsenceFines(),e.getLateFines(),
-                        e.getRealWages(),e.getPayDate()
-                ))
-
-        ).collect(Collectors.toList());
+        for (Wages wages : wageses) {
+            User user = userMapper.getUserById(wages.getUserId());
+            if(user==null){
+                continue;
+            }
+            WagesDto wagesDto =new WagesDto(wages.getId(), user.getUsername(),
+                    deptMapper.getDeptById(userMapper.getUserById(wages.getUserId()).getDeptId()).getDeptName(),
+                    jobMapper.getJobById(userMapper.getUserById(wages.getUserId()).getJobId()).getJobName(), wages.getBasicWages(),
+                    wages.getLivePay(), wages.getNightPay(), wages.getRewardPay(), wages.getSocialPay(), wages.getAbsenceFines(), wages.getLateFines(),
+                    wages.getRealWages(), wages.getPayDate()
+            );
+            wagesDtos.add(wagesDto);
+        }
+//        List<WagesDto> wagesDtos = wageses.stream().map(e -> (
+//                new WagesDto(e.getId(), userMapper.getUserById(e.getUserId()).getUsername(),
+//                        deptMapper.getDeptById(userMapper.getUserById(e.getUserId()).getDeptId()).getDeptName(),
+//                        jobMapper.getJobById(userMapper.getUserById(e.getUserId()).getJobId()).getJobName(), e.getBasicWages(),
+//                        e.getLivePay(), e.getNightPay(), e.getRewardPay(), e.getSocialPay(), e.getAbsenceFines(), e.getLateFines(),
+//                        e.getRealWages(), e.getPayDate()
+//                ))
+//
+//        ).collect(Collectors.toList());
         return wagesDtos;
     }
 
@@ -107,12 +121,12 @@ public class WagesServiceImpl implements WagesService {
     @Override
     public List<WagesDto> getSelf(long userId) {
         List<Wages> list = wagesMapper.getWagesByUserId(userId);
-        List<WagesDto> wagesDtos = list.stream().map(e ->(
-                new WagesDto(e.getId(),userMapper.getUserById(e.getUserId()).getUsername(),
+        List<WagesDto> wagesDtos = list.stream().map(e -> (
+                new WagesDto(e.getId(), userMapper.getUserById(e.getUserId()).getUsername(),
                         deptMapper.getDeptById(userMapper.getUserById(e.getUserId()).getDeptId()).getDeptName(),
-                        jobMapper.getJobById(userMapper.getUserById(e.getUserId()).getJobId()).getJobName(),e.getBasicWages(),
-                        e.getLivePay(),e.getNightPay(),e.getRewardPay(),e.getSocialPay(),e.getAbsenceFines(),e.getLateFines(),
-                        e.getRealWages(),e.getPayDate()
+                        jobMapper.getJobById(userMapper.getUserById(e.getUserId()).getJobId()).getJobName(), e.getBasicWages(),
+                        e.getLivePay(), e.getNightPay(), e.getRewardPay(), e.getSocialPay(), e.getAbsenceFines(), e.getLateFines(),
+                        e.getRealWages(), e.getPayDate()
                 ))
 
         ).collect(Collectors.toList());

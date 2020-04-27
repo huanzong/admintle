@@ -39,7 +39,7 @@ public class AppController {
     @Autowired
     private ApplicantMapper applicantMapper;
     //简历存储路径
-    String  filePath = "F:/resume/";
+    String  filePath = "E:/resume/";
 
     private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
